@@ -1,0 +1,154 @@
+---
+title: "Análise Exploratória"
+author: "Wagner Oliveira"
+date: "28/04/2021"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+
+## Install packages
+
+```{r packs, message=FALSE, warning=FALSE, paged.print=TRUE}
+#install.packages("tidyverse")
+#install.packages("summarytools")
+#install.packages("ggplot2") 
+#install.packages("quantmod")    # Framework Quantitativo para Mercado Financeiro
+#install.packages("Quandl")     # Coletar Cotações do Índice Ibovespa
+#install.packages("gridExtra") # Graficos acomplados
+#install.packages("ggpubr") 
+#install.packages("GGally")
+```
+
+### Carregamentos dos pacotes
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+library(tidyverse)
+library(summarytools)
+library(ggplot2)
+library(quantmod) 
+library(gridExtra)
+library(ggpubr)
+library(GGally)
+```
+
+## Baixando a base do Yahoo Finance e Validando período da base
+```{r Coletando e Criando Base de dados, message=FALSE, warning=FALSE, paged.print=TRUE}
+getSymbols(c("^BVSP"),
+           periodicity='monthly', 
+           from='2000-01-01',
+           to='2021-04-15'
+           )
+```
+
+### Descreva estatisticamente as base de dados
+```{r}
+descr(BVSP)
+```
+
+#### Crie um gráfico com a matriz de espalhamento (scatter matrix plot) para sua base de dados. Através de investigação visual, quais são as variáveis mais correlacionadas. Apresente o gráfico e justifique.
+```{r message=FALSE, warning=FALSE}
+ggpairs(BVSP)    
+
+```
+#### As váriaveis Open, High, Low, Close e Adjuste. São totalmente correlacionadas positivamente, pois acompanham o crescimento do indice Bovespa.
+
+
+
+### 5 -Sobre a normalidade das variáveis:
+#### a. Descreva o que é uma distribuição normal;
+
+##### D istribuição Normal é a mais importante distribuição contínua. Importante para diversas práticas, destaco o Teorema Central do Limite, para garantir a média de um conjunto de dados que converge para uma distribuição normal conforme o número de dados cresce. 
+
+
+### b. Crie um histograma para cada variável da sua base de dados. Justifique a escolha do número de bins para seu trabalho. (usando o pacote ggplot);
+
+```{r message=FALSE, warning=FALSE}
+
+# Variável Open
+ggplot(BVSP, aes(time(BVSP), BVSP$BVSP.Open, group=1)) +
+  geom_line(color="blue",linetype = "dashed")+
+  geom_point()
+# Variável High
+ggplot(BVSP, aes(time(BVSP), BVSP$BVSP.High, group=1)) +
+  geom_line(color="black",linetype = "dashed")+
+  geom_point()
+# Variável Low
+ggplot(BVSP, aes(time(BVSP), BVSP$BVSP.Low, group=1)) +
+  geom_line(color="red",linetype = "dashed")+
+  geom_point()
+# Variável Closed
+ggplot(BVSP, aes(time(BVSP), BVSP$BVSP.Close, group=1)) +
+  geom_line(color="yellow",linetype = "dashed")+
+  geom_point()
+# Variável Adjusted
+ggplot(BVSP, aes(time(BVSP), BVSP$BVSP.Adjusted, group=1)) +
+  geom_line(color="green",linetype = "dashed")+
+  geom_point()
+```
+
+### c. Crie um gráfico Q-Q para cada variável de sua base de dados. (use as funções presentes no pacote ggpubr);
+
+```{r}
+library(ggpubr)
+qplot( sample = BVSP.Open , data = BVSP)+ theme_minimal()
+qplot( sample = BVSP.High , data = BVSP)+ theme_minimal()
+qplot( sample = BVSP.Low , data = BVSP)+ theme_minimal()
+qplot( sample = BVSP.Close , data = BVSP)+ theme_minimal()
+qplot( sample = BVSP.Adjusted , data = BVSP)+ theme_minimal()
+
+```
+
+### d. Execute um teste de normalidade Shapiro-Wilk;
+
+```{r}
+
+bopen <- BVSP$BVSP.Open
+shapiro.test(as.numeric(bopen))
+
+bHigh <- BVSP$BVSP.High
+shapiro.test(as.numeric(bHigh))
+
+bLow <- BVSP$BVSP.Low
+shapiro.test(as.numeric(bLow))
+
+bClose <- BVSP$BVSP.Close
+shapiro.test(as.numeric(bClose))
+
+bAdj <- BVSP$BVSP.Adjusted
+shapiro.test(as.numeric(bAdj))
+
+```
+
+### 6. Qualidade de dados tem sido um dos temas mais abordados nos projetos de estruturação em data analytics, sendo um dos principais indicadores do nível de maturidade das organizações. Um dos problemas mais comuns de qualidade é relacionado à completude de dados. Em suas palavras, como é definido completude? Qual o impacto em uma análise exploratória de dados?
+##### Nesta disciplina meu entendimento é baseado no percentual de registros ou campos preenchidos em uma base, ou seja, poucos dados como NA(null)
+##### Atualmente a Análise exploratória desempenha um grande papel fornecendo entendimento sobre os dados e identificando padrões e revelando informações ocultas em um estrutura de dados. Muitas pesquisas atualmente utilizam a análise exploratória para formular hipoteses antes mesmos da realização da modelagem dos dados, sendo assim os pesquisadores podem decidir qual técnica melhor será aplicada para tratamento dos dados.
+
+### 7. Qual a completude para cada uma das variáveis do seu banco de dados?
+```{r}
+
+```
+
+### 8. Realize uma operação de imputação de dados usando o pacote MICE.
+```{r}
+
+```
+
+### 9.Crie um dashboard Shiny onde seja possível selecionar (tire um print-screen da tela final do sistema):
+#### a. uma variável da sua base de dados e um gráfico em linha seja mostrado na tela;
+#### b. escolher a cor da linha do gráfico;
+#### c. selecionar o limite inferior e superior do eixo X do gráfico;
+#### d .selecionar o limite inferior e superior do eixo Y do gráfico.
+```{r}
+
+```
+
+
+### 10. Disponibilize os códigos (RMarkdown e Shiny) em uma plataforma de compartilhamento de códigos (sugestão GitHub)
+#### Código github
+#### https://github.com/Wagner85/analise_exploratorio_BVSP
+#### https://rpubs.com/wagner85/AnaliseExploratoria_Bovespa
+
+
